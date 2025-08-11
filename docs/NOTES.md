@@ -28,5 +28,5 @@
 
 ## Original Drawings 
 
-![original drawings](images/notebook_notes.jpg)
+![original drawings](./images/notebook_notes.jpg)
 
