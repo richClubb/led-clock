@@ -12,8 +12,8 @@ I chose this as the first of the projects for my 12 projects in 12 months. I've 
     - [x] Programmable over serial 
     - [ ] Settable with buttons
     - [x] Start 
-    - [ ] pause 
-    - [ ] reset
+    - [x] pause 
+    - [x] reset
     - [x] Configurable colour
 - [ ] EEPROM to store configuration from last serial config
 - [ ] NTP functionality for setting the time
