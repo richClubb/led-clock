@@ -1,5 +1,15 @@
 # Notes
 
+## Software
+
+I chose to use the Arduino IDE as it's easy for other people to use and modify, I want people to be able to make this their own.
+
+The other options for this would have been the [ESP-IDF](https://idf.espressif.com/). I've not used it yet but I've seen some pretty cool projects using it, so it would have been an option, and as the devices I'm using aren't particularly complex it would have been easy to write the drivers necessary.
+
+If I remember correctly there are examples using their own RTOS which would make commercial programming much easier. This would be a better option if the project needed more flexibility.
+
+There is also the [ESP32 Rust](https://github.com/esp-rs) which is something I'll hopefully have chance to play around with for this project.
+
 ## Research
 
 ### Hardware

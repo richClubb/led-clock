@@ -2,12 +2,14 @@
 
 A desk or wall LED clock based on the LED rings 
 
-* 24 LED ring - https://coolcomponents.co.uk/products/24-led-ring-sk6812-5050-rgb-led-with-integrated-drivers-adafruit-neopixel-compatible
+* Neopixel ring 12 LED - https://www.adafruit.com/product/1643
+* Neopixel ring 24 LED - https://www.adafruit.com/product/1586
 
 ![Led Clock](./docs/images/clock.png)
 
 ## Objectives
 
+* Easy for people to modify / use
 * Use an RTC to keep time even when it's off
 * Use NTP to update time
 * Single code to handle all 3 clock variants
@@ -24,7 +26,7 @@ A desk or wall LED clock based on the LED rings
 * Programmed in Rust
   * This is stage 2
 
-The idea is that this is could be a product that I could sell, either as a finished clock or as a kit
+The idea is that this is could be a product that I could sell, either as a finished clock or as a kit, but it's easy enough that it can be assembled by secondary school students.
 
 ## Demos
 
@@ -50,3 +52,4 @@ This video shows the timer working. The timer is for 10s and then flashes to sho
 
 * [Updates](./UPDATES.md) - Updates for the "12 Projects in 12 Months" Idea
 * [Notes](./docs/NOTES.md) - General notes
+* [Install](./docs/INSTALL.md) - Installing and programming

@@ -47,6 +47,90 @@ extern void (*setTimePtr)(byte, byte, byte, byte, byte, byte);
 #define TIME_CMD 1U
 #define TIME_CMD_DATA_OFFSET 2
 
+// 1 character longer to account for the \0
+#define YEAR_STR_LEN 5
+#define MONTH_STR_LEN 3
+#define DAY_STR_LEN 3
+#define HOUR_STR_LEN 3
+#define MINUTE_STR_LEN 3
+#define SECOND_STR_LEN 3
+
+#define YEAR_VAL_MIN 0
+#define YEAR_VAL_MAX 9999
+#define MONTH_VAL_MIN 1
+#define MONTH_VAL_MAX 12
+#define DAY_VAL_MIN 1
+#define DAY_VAL_MAX 31
+#define HOUR_VAL_MIN 0
+#define HOUR_VAL_MAX 23
+#define MINUTE_VAL_MIN 0
+#define MINUTE_VAL_MAX 59
+#define SECOND_VAL_MIN 0
+#define SECOND_VAL_MAX 59
+
+#define JANUARY 1
+#define FEBRUARY 2
+#define MARCH 3
+#define APRIL 4
+#define MAY 5
+#define JUNE 6
+#define JULY 7
+#define AUGUST 8
+#define SEPTEMBER 9
+#define OCTOBER 10
+#define NOVEMBER 11
+#define DECEMBER 12
+
+bool validate_month_day(unsigned int month, unsigned int day)
+{
+  if (month < MONTH_VAL_MIN || month > MONTH_VAL_MAX) return false;
+  if (day < DAY_VAL_MIN || day > DAY_VAL_MAX) return false;
+
+  // I should hash define this but I CBA...
+  switch(month)
+  {
+    case JANUARY:
+      if (day < 1 || day > 31) return false;
+      break;
+    case FEBRUARY:
+      // should I bother to do the leap year calculation
+      if (day < 1 || day > 29) return false;
+      break;
+    case MARCH:
+      if (day < 1 || day > 31) return false;
+      break;
+    case APRIL:
+      if (day < 1 || day > 30) return false;
+      break;
+    case MAY:
+      if (day < 1 || day > 31) return false;
+      break;
+    case JUNE:
+      if (day < 1 || day > 30) return false;
+      break;
+    case JULY:
+      if (day < 1 || day > 31) return false;
+      break;
+    case AUGUST:
+      if (day < 1 || day > 31) return false;
+      break;
+    case SEPTEMBER:
+      if (day < 1 || day > 30) return false;
+      break;
+    case OCTOBER:
+      if (day < 1 || day > 31) return false;
+      break;
+    case NOVEMBER:
+      if (day < 1 || day > 30) return false;
+      break;
+    case DECEMBER:
+      if (day < 1 || day > 31) return false;
+      break;
+  }
+
+  return true;
+}
+
 bool validate_time_command(
   char *ptr, 
   unsigned int size,
@@ -58,12 +142,12 @@ bool validate_time_command(
   byte *second
 )
 {
-  char year_str[5];
-  char month_str[3];
-  char day_str[3];
-  char hour_str[3];
-  char minute_str[3];
-  char second_str[3];
+  char year_str[YEAR_STR_LEN];
+  char month_str[MONTH_STR_LEN];
+  char day_str[DAY_STR_LEN];
+  char hour_str[HOUR_STR_LEN];
+  char minute_str[MINUTE_STR_LEN];
+  char second_str[SECOND_STR_LEN];
   char *endptr;
 
   long year_l, month_l, day_l, hour_l, minute_l, second_l;
@@ -86,38 +170,38 @@ bool validate_time_command(
 
   if (ptr[TIME_COMMAND_MINUTE_COLON_POS] != ':') return false;
 
-  memset(year_str, '\0', 5);
-  memset(month_str, '\0', 3);
-  memset(day_str, '\0', 3);
-  memset(hour_str, '\0', 3);
-  memset(minute_str, '\0', 3);
-  memset(second_str, '\0', 3);
+  memset(year_str, '\0', YEAR_STR_LEN);
+  memset(month_str, '\0', MONTH_STR_LEN);
+  memset(day_str, '\0', DAY_STR_LEN);
+  memset(hour_str, '\0', HOUR_STR_LEN);
+  memset(minute_str, '\0', MINUTE_STR_LEN);
+  memset(second_str, '\0', SECOND_STR_LEN);
   
-  memcpy(year_str, ptr, 4);
-  memcpy(month_str, ptr + 5, 2);
-  memcpy(day_str, ptr + 8, 2);
-  memcpy(hour_str, ptr + 11, 2);
-  memcpy(minute_str, ptr + 14, 2);
-  memcpy(second_str, ptr + 17, 2);
+  // subtracting 1 to only copy the actual digit
+  memcpy(  year_str,                                     ptr,   YEAR_STR_LEN - 1);
+  memcpy( month_str,   ptr + TIME_COMMAND_MONTH_DASH_POS + 1,  MONTH_STR_LEN - 1);
+  memcpy(   day_str,     ptr + TIME_COMMAND_DAY_DASH_POS + 1,    DAY_STR_LEN - 1);
+  memcpy(  hour_str,       ptr + TIME_COMMAND_TIME_T_POS + 1,   HOUR_STR_LEN - 1);
+  memcpy(minute_str,   ptr + TIME_COMMAND_HOUR_COLON_POS + 1, MINUTE_STR_LEN - 1);
+  memcpy(second_str, ptr + TIME_COMMAND_MINUTE_COLON_POS + 1, SECOND_STR_LEN - 1);
 
-  year_l = strtol(year_str, &endptr, 10);
-  month_l = strtol(month_str, &endptr, 10);
-  day_l = strtol(day_str, &endptr, 10);
-  hour_l = strtol(hour_str, &endptr, 10);
+  year_l   = strtol(  year_str, &endptr, 10);
+  month_l  = strtol( month_str, &endptr, 10);
+  day_l    = strtol(   day_str, &endptr, 10);
+  hour_l   = strtol(  hour_str, &endptr, 10);
   minute_l = strtol(minute_str, &endptr, 10);
   second_l = strtol(second_str, &endptr, 10);
 
-  if ( (year_l < 0) || (year_l > 9999) ) return false;
-  if ( (month_l < 1) || (month_l > 12) ) return false;
-  if ( (day_l < 1) || (day_l > 31) ) return false;
-  if ( (hour_l < 00) || (hour_l > 59) ) return false;
-  if ( (minute_l < 00) || (minute_l > 59) ) return false;
-  if ( (second_l < 00) || (second_l > 59) ) return false;
+  if ( (  year_l < YEAR_VAL_MIN)   || (year_l   > YEAR_VAL_MAX)   ) return false;
+  if ( validate_month_day(month_l, day_l)) return false;
+  if ( (  hour_l < HOUR_VAL_MIN)   || (hour_l   > HOUR_VAL_MAX)   ) return false;
+  if ( (minute_l < MINUTE_VAL_MIN) || (minute_l > MINUTE_VAL_MAX) ) return false;
+  if ( (second_l < SECOND_VAL_MIN) || (second_l > SECOND_VAL_MAX) ) return false;
 
-  *year = (byte)year_l % 100;
-  *month = (byte)month_l;
-  *day = (byte)day_l;
-  *hour = (byte)hour_l;
+  *year   = (byte)year_l % 100;
+  *month  = (byte)month_l;
+  *day    = (byte)day_l;
+  *hour   = (byte)hour_l;
   *minute = (byte)minute_l;
   *second = (byte)second_l;
 
@@ -173,14 +257,18 @@ extern void (*setTimeUnitPtr)(byte, byte, byte, byte, byte);
 
 #define SECOND_CMD 4U
 #define SECOND_CMD_DATA_OFFSET 2
+
+#define TIME_UNIT_COMMAND_LEN 13
+#define RING_STR_LEN 2
+#define COL_STR_LEN 4
 bool validate_time_unit_command(char *ptr, unsigned int size, byte *led_ring, byte *red, byte *green, byte *blue)
 {
   Serial.println("Validating time unit command");
 
-  char ring_str[2];
-  char red_str[4];
-  char green_str[4];
-  char blue_str[4];
+  char ring_str[RING_STR_LEN];
+  char red_str[COL_STR_LEN];
+  char green_str[COL_STR_LEN];
+  char blue_str[COL_STR_LEN];
   char *endptr;
 
   unsigned long ring_l, red_l, green_l, blue_l;
@@ -188,7 +276,7 @@ bool validate_time_unit_command(char *ptr, unsigned int size, byte *led_ring, by
   // 0 , 0 0 0 , 0 0 0 ,  0  0  0
   // 0 1 2 3 4 5 6 7 8 9 10 11 12
 
-  if (strlen(ptr) != 13){
+  if (strlen(ptr) != TIME_UNIT_COMMAND_LEN){
     Serial.println("Invalid length");
     return false;
   } 
@@ -199,30 +287,30 @@ bool validate_time_unit_command(char *ptr, unsigned int size, byte *led_ring, by
 
   if (ptr[9] != ',') return false;
 
-  memset(ring_str, '\0', 2);
-  memset(red_str, '\0', 4);
-  memset(green_str, '\0', 4);
-  memset(blue_str, '\0', 4);
+  memset(ring_str, '\0', RING_STR_LEN);
+  memset(red_str, '\0', COL_STR_LEN);
+  memset(green_str, '\0', COL_STR_LEN);
+  memset(blue_str, '\0', COL_STR_LEN);
 
   memcpy(ring_str, ptr, 1);
   memcpy(red_str, ptr+2, 3);
   memcpy(green_str, ptr+6, 3);
   memcpy(blue_str, ptr+10, 3);
 
-  ring_l = strtol(ring_str, &endptr, 10);
-  red_l = strtol(red_str, &endptr, 10);
+  ring_l  = strtol(ring_str, &endptr, 10);
+  red_l   = strtol(red_str, &endptr, 10);
   green_l = strtol(green_str, &endptr, 10);
-  blue_l = strtol(blue_str, &endptr, 10);
+  blue_l  = strtol(blue_str, &endptr, 10);
 
-  if ((ring_l < 1) || ring_l > 4) return false;
-  if ((red_l < 0) || red_l > 255) return false;
+  if ( (ring_l < 1) || ring_l > 4)    return false;
+  if (  (red_l < 0) || red_l > 255)   return false;
   if ((green_l < 0) || green_l > 255) return false;
-  if ((blue_l < 0) || blue_l > 255) return false;
+  if ( (blue_l < 0) || blue_l > 255)  return false;
 
   *led_ring = (byte)ring_l;
-  *red = (byte)red_l;
-  *green = (byte)green_l;
-  *blue = (byte)blue_l;
+  *red      = (byte)red_l;
+  *green    = (byte)green_l;
+  *blue     = (byte)blue_l;
 
   return true;
 }
@@ -257,7 +345,7 @@ bool validate_timer_command(char *ptr, unsigned int size, unsigned int *time)
   char unit_strs[3][3];
   char *endptr;
 
-  memset(unit_strs, '\0', 3*3);
+  memset(unit_strs, '\0', 3 * 3);
 
   unsigned int current_state = 0;
   unsigned int current_index = 0;
