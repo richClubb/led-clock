@@ -29,6 +29,8 @@ private:
     unsigned int blue_colour;
     
     unsigned int time;
+    unsigned int last_time;
+    unsigned long millis_offset;
     TimeUnitType unit_type;
     float deg_per_unit;
 
@@ -77,24 +79,29 @@ public:
 
   void update(unsigned long millis_offset)
   {
+    this->last_time = this->time;
     byte rtc_day, rtc_hour, rtc_minute, rtc_second;
     switch(this->unit_type)
     {
       case Month:
-        time = rtc->getMonth(this->century);
+        this->time = rtc->getMonth(this->century);
         break;
       case Day:
-        time = rtc->getDate();
+        this->time = rtc->getDate();
         break;
       case Hour:
-        time = rtc->getHour(this->h12Flag, this->pmFlag) * 60 + rtc->getMinute();
+        this->time = rtc->getHour(this->h12Flag, this->pmFlag) * 60 + rtc->getMinute();
         break;
       case Minute:
-        time = rtc->getMinute() * 60 + rtc->getSecond();
+        this->time = rtc->getMinute() * 60 + rtc->getSecond();
         break;
       case Second:
-        time = rtc->getSecond();
-        time = ( time * 1000 ) + ( ( millis()-millis_offset ) % 1000ul );
+        this->time = rtc->getSecond();
+        if (this->last_time != this->time)
+        {
+          this->millis_offset = millis();
+        }
+        this->time = ( time * 1000 ) + ( ( millis() - this->millis_offset ) % 1000ul );
         break;
     }
 
