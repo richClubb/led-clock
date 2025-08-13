@@ -114,13 +114,19 @@ public:
     pri_mod = float(deg_per_pixel - (int(time_degree) % deg_per_pixel)) / deg_per_pixel;
     sec_mod = float(int(time_degree) % deg_per_pixel) / deg_per_pixel;
 
-    this->led_strip->led_cols[pri_led][RED_COL_INDEX] += this->red_colour * pri_mod;
-    this->led_strip->led_cols[pri_led][GREEN_COL_INDEX] += this->green_colour * pri_mod;
-    this->led_strip->led_cols[pri_led][BLUE_COL_INDEX] += this->blue_colour * pri_mod;
+    this->led_strip->increment_led_colour(
+      pri_led, 
+      this->red_colour * pri_mod, 
+      this->green_colour * pri_mod, 
+      this->blue_colour * pri_mod
+    );
 
-    this->led_strip->led_cols[sec_led][RED_COL_INDEX] += this->red_colour * sec_mod;
-    this->led_strip->led_cols[sec_led][GREEN_COL_INDEX] += this->green_colour * sec_mod;
-    this->led_strip->led_cols[sec_led][BLUE_COL_INDEX] += this->blue_colour * sec_mod;
+    this->led_strip->increment_led_colour(
+      sec_led, 
+      this->red_colour * sec_mod, 
+      this->green_colour * sec_mod, 
+      this->blue_colour * sec_mod
+    );
   }
 
   void set_colours(
