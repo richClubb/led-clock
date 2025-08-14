@@ -77,7 +77,7 @@ public:
     }
   }
 
-  void update(unsigned long millis_offset)
+  void update()
   {
     unsigned long time_int;
     this->last_time = this->time;
