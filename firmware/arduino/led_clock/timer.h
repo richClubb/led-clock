@@ -130,9 +130,7 @@ public:
       {
         for(unsigned int index = 0; index < this->led_strip->num_pixels; index++)
         {
-          this->led_strip->led_cols[index][0] = min(255u, this->led_strip->led_cols[index][0] + this->col[0]);
-          this->led_strip->led_cols[index][1] = min(255u, this->led_strip->led_cols[index][1] + this->col[1]);
-          this->led_strip->led_cols[index][2] = min(255u, this->led_strip->led_cols[index][2] + this->col[2]);
+          this->led_strip->increment_led_colour(index, this->col[0], this->col[1], this->col[2]);
         }
       }
 
@@ -156,9 +154,7 @@ public:
 
     for(unsigned int index = 0; index < progress_led; index++)
     {
-      this->led_strip->led_cols[index][0] = min(255u, this->led_strip->led_cols[index][0] + this->col[0]);
-      this->led_strip->led_cols[index][1] = min(255u, this->led_strip->led_cols[index][1] + this->col[1]);
-      this->led_strip->led_cols[index][2] = min(255u, this->led_strip->led_cols[index][2] + this->col[2]);
+      this->led_strip->increment_led_colour(index, this->col[0], this->col[1], this->col[2]);
     }
 
     this->last_state = Active;
@@ -172,9 +168,7 @@ public:
 
     for(unsigned int index = 0; index < progress_led; index++)
     {
-      this->led_strip->led_cols[index][0] = min(255u, this->led_strip->led_cols[index][0] + this->col[0]);
-      this->led_strip->led_cols[index][1] = min(255u, this->led_strip->led_cols[index][1] + this->col[1]);
-      this->led_strip->led_cols[index][2] = min(255u, this->led_strip->led_cols[index][2] + this->col[2]);
+      this->led_strip->increment_led_colour(index, this->col[0], this->col[1], this->col[2]);
     }
     this->last_state = Paused;
   }

@@ -4,6 +4,7 @@
 #include "timer.h"
 #include <DS3231.h>
 #include <Wire.h>
+#include "Preferences.h"
 
 #define LED_DISPLAY_DELAY 100
 
@@ -30,6 +31,11 @@ TimeUnit second_unit(&middle_ring, &rtc, Second, 0, 0, 50);
 ClockTimer clock_timer(&middle_ring, 50, 0, 0);
 
 unsigned long millis_offset = 0;
+
+#define RW_MODE false
+#define RO_MODE true
+
+Preferences stcPrefs;
 
 void set_time(
   byte year, 
@@ -61,21 +67,39 @@ void set_time_unit(
   // damnit, need to define an interface
   TimeUnit *time_unit_ptr;
 
+  stcPrefs.begin("STCPrefs", RW_MODE);
   switch(time_unit)
   {
     case 1:
       // Hour
       time_unit_ptr = &hour_unit;
+      stcPrefs.putBool("hourSet", true);
+      stcPrefs.putUChar("hourRed", red);
+      stcPrefs.putUChar("hourGreen", green);
+      stcPrefs.putUChar("hourBlue", blue);
+      stcPrefs.putUChar("hourRing", ring);
       break;
     case 2:
       // Minute
       time_unit_ptr = &minute_unit;
+      stcPrefs.putBool("minuteSet", true);
+      stcPrefs.putUChar("minuteRed", red);
+      stcPrefs.putUChar("minuteGreen", green);
+      stcPrefs.putUChar("minuteBlue", blue);
+      stcPrefs.putUChar("minuteRing", ring);
       break;
     case 3:
       // Second
+      Serial.println("Second set");
       time_unit_ptr = &second_unit;
+      stcPrefs.putBool("secondSet", true);
+      stcPrefs.putUChar("secondRed", red);
+      stcPrefs.putUChar("secondGreen", green);
+      stcPrefs.putUChar("secondBlue", blue);
+      stcPrefs.putUChar("secondRing", ring);
       break;
   }
+  stcPrefs.end();
 
   switch(ring)
   {
@@ -93,6 +117,9 @@ void set_time_unit(
       break;
   }
   time_unit_ptr->set_colours(red, green, blue);
+
+
+
 }
 void (*setTimeUnitPtr)(byte, byte, byte, byte, byte) = &set_time_unit;
 
@@ -146,21 +173,54 @@ void(*setTimerControlPtr)(unsigned int) = &set_timer_control;
 
 void setup()
 {
-    unsigned int base_second = 0;
-    Serial.begin(115200);
-    while(!Serial){}
+  unsigned int base_second = 0;
+  Serial.begin(115200);
+  while(!Serial){}
 
-    Wire.begin(7, 6);
+  Wire.begin(7, 6);
 
-    base_second = rtc.getSecond();
-    while(1)
+  base_second = rtc.getSecond();
+  while(1)
+  {
+    if(rtc.getSecond() != base_second)
     {
-      if(rtc.getSecond() != base_second)
-      {
-        millis_offset = millis();
-        break;
-      }
+      millis_offset = millis();
+      break;
     }
+  }
+
+  stcPrefs.begin("STCPrefs", RO_MODE);
+  bool tpInit = stcPrefs.isKey("nvsInit");
+
+  if (tpInit == true)
+  {
+    Serial.println("Preferences initialised");
+
+    if (stcPrefs.isKey("hourSet"))
+    {
+      hour_unit.set_colours(stcPrefs.getUChar("hourRed"), stcPrefs.getUChar("hourGreen"), stcPrefs.getUChar("hourBlue"));
+    }
+
+    if (stcPrefs.isKey("minuteSet"))
+    {
+      minute_unit.set_colours(stcPrefs.getUChar("minuteRed"), stcPrefs.getUChar("minuteGreen"), stcPrefs.getUChar("minuteBlue"));
+    }
+
+    if (stcPrefs.isKey("secondSet"))
+    {
+      Serial.println("Found second config");
+      second_unit.set_colours(stcPrefs.getUChar("secondRed"), stcPrefs.getUChar("secondGreen"), stcPrefs.getUChar("secondBlue"));
+    }
+
+    stcPrefs.end();
+  }
+  else
+  {
+    stcPrefs.end();
+    stcPrefs.begin("STCPrefs", RW_MODE);
+    stcPrefs.putBool("nvsInit", true);
+    stcPrefs.end();
+  }
 }
 
 unsigned int led_index = 0;

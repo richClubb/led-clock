@@ -79,21 +79,26 @@ public:
 
   void update(unsigned long millis_offset)
   {
+    unsigned long time_int;
     this->last_time = this->time;
     byte rtc_day, rtc_hour, rtc_minute, rtc_second;
     switch(this->unit_type)
     {
       case Month:
         this->time = rtc->getMonth(this->century);
+        time_int = this->time;
         break;
       case Day:
         this->time = rtc->getDate();
+        time_int = this->time;
         break;
       case Hour:
         this->time = rtc->getHour(this->h12Flag, this->pmFlag) * 60 + rtc->getMinute();
+        time_int = this->time;
         break;
       case Minute:
         this->time = rtc->getMinute() * 60 + rtc->getSecond();
+        time_int = this->time;
         break;
       case Second:
         this->time = rtc->getSecond();
@@ -101,7 +106,7 @@ public:
         {
           this->millis_offset = millis();
         }
-        this->time = ( time * 1000 ) + ( ( millis() - this->millis_offset ) % 1000ul );
+        time_int = ( time * 1000 ) + ( ( millis() - this->millis_offset ) % 1000ul );
         break;
     }
 
@@ -113,7 +118,7 @@ public:
     float pri_mod = 0;
     float sec_mod = 0;
 
-    unsigned int time_degree = time * this->deg_per_unit;
+    unsigned int time_degree = time_int * this->deg_per_unit;
 
     pri_led = (time_degree / deg_per_pixel);
     sec_led = (pri_led + 1) % num_pixels;
@@ -163,20 +168,5 @@ public:
     this->led_strip = this->led_strip_orig;
   }
 };
-
-void set_time_unit(
-  TimeUnit *time_unit, 
-  LedStrip *led_strip,
-  unsigned int red_col, 
-  unsigned int green_col, 
-  unsigned int blue_col)
-{
-  if (led_strip != NULL)
-  {
-    time_unit->set_led_strip(led_strip);
-  }
-
-  time_unit->set_colours(red_col, green_col, blue_col);
-}
 
 #endif
