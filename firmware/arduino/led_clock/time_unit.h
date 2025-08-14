@@ -20,7 +20,7 @@ class TimeUnit
 
 private:
     LedStrip *led_strip = NULL;
-    LedStrip *led_strip_orig = NULL;
+    LedStrip *led_strip_alt = NULL;
     
     DS3231 *rtc = NULL;
     
@@ -40,7 +40,8 @@ private:
     
 public:
   TimeUnit(
-    LedStrip *led_strip, 
+    LedStrip *led_strip,
+    LedStrip *led_strip_alt,
     DS3231 *rtc, 
     TimeUnitType unit_type, 
     unsigned int red_colour,
@@ -49,7 +50,7 @@ public:
   )
   {
     this->led_strip = led_strip;
-    this->led_strip_orig = led_strip;
+    this->led_strip_alt = led_strip_alt;
     this->rtc = rtc;
     this->unit_type = unit_type;
 
@@ -154,18 +155,26 @@ public:
 
   void set_led_strip(LedStrip *led_strip)
   {
-    this->led_strip_orig = led_strip;
     this->led_strip = led_strip;
   }
 
-  void set_led_strip_temp(LedStrip *led_strip)
+  void set_led_strip_alt(LedStrip *led_strip)
   {
-    this->led_strip = led_strip;
+    this->led_strip_alt = led_strip;
+  }
+
+  void switch_alt_led_strip()
+  {
+    LedStrip *temp = led_strip;
+    this->led_strip = this->led_strip_alt;
+    this->led_strip_alt = temp;
   }
 
   void restore_led_strip()
   {
-    this->led_strip = this->led_strip_orig;
+    LedStrip *temp = led_strip;
+    this->led_strip = this->led_strip_alt;
+    this->led_strip_alt = temp;
   }
 };
 

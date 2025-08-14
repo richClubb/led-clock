@@ -329,6 +329,8 @@ bool process_time_unit_command(char *ptr, unsigned int size, byte time_unit)
   }
 
   setTimeUnitPtr(time_unit, led_ring, red, green, blue);
+
+  return result;
 }
 
 extern void (*setTimerPtr)(unsigned int);
@@ -340,8 +342,6 @@ extern void (*setTimerPtr)(unsigned int);
 #define TIMER_CMD_DATA_OFFSET 2
 bool validate_timer_command(char *ptr, unsigned int size, unsigned int *time)
 {
-  Serial.println("Validating timer command");
-
   char unit_strs[3][3];
   char *endptr;
 
@@ -435,7 +435,6 @@ bool validate_timer_control_command(char *ptr, unsigned int size, unsigned int *
 //  if ((ptr_len == 5) && strncmp(ptr, "pause", 5))
   if(*ptr == '1')
   {
-    Serial.println("Found pause");
     *mode = 1;
     return true;
   }
@@ -443,7 +442,6 @@ bool validate_timer_control_command(char *ptr, unsigned int size, unsigned int *
 //  if ((ptr_len == 5) && strncmp(ptr, "reset", 5))
   if(*ptr == '2')
   {
-    Serial.println("Found reset");
     *mode = 2;
     return true;
   }
@@ -451,7 +449,6 @@ bool validate_timer_control_command(char *ptr, unsigned int size, unsigned int *
 //  if ((ptr_len == 5) && strncmp(ptr, "reset", 5))
   if(*ptr == '3')
   {
-    Serial.println("Found reset");
     *mode = 3;
     return true;
   }
@@ -472,7 +469,6 @@ bool process_timer_control_command(char *ptr, unsigned int size)
 
   if (setTimerControlPtr == NULL)
   {
-    Serial.println("Timer control Ptr callback not allocated");
     return false;
   }
 

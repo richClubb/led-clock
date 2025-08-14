@@ -19,7 +19,6 @@ class ClockTimer
 private:
   LedStrip *led_strip;
   byte col[3] = {0, 255, 0};
-  float progress;
   unsigned int timer_time_millis;
   unsigned long start_time_millis;
   unsigned long elapsed_time;
@@ -67,7 +66,6 @@ public:
   {
     this->start_time_millis = millis();
     this->state = Active;
-    this->progress = 0;
   }
 
   // pause stops the timer from ticking but leaves the display state

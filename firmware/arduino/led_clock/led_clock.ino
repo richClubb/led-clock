@@ -29,9 +29,9 @@ bool century = false;
 bool h12Flag;
 bool pmFlag;
 
-TimeUnit hour_unit(&inner_ring, &rtc, Hour, 0, 50, 0);
-TimeUnit minute_unit(&middle_ring, &rtc, Minute, 50, 0, 0);
-TimeUnit second_unit(&middle_ring, &rtc, Second, 0, 0, 50);
+TimeUnit hour_unit(&inner_ring, &inner_ring, &rtc, Hour, 0, 50, 0);
+TimeUnit minute_unit(&middle_ring, &inner_ring, &rtc, Minute, 50, 0, 0);
+TimeUnit second_unit(&middle_ring, &inner_ring, &rtc, Second, 0, 0, 50);
 
 ClockTimer clock_timer(&middle_ring, 50, 0, 0);
 
@@ -128,6 +128,11 @@ void (*setTimeUnitPtr)(byte, byte, byte, byte, byte) = &set_time_unit;
 void set_timer(unsigned int seconds)
 {
   clock_timer.set_timer(seconds);
+  
+  hour_unit.switch_alt_led_strip();
+  minute_unit.switch_alt_led_strip();
+  second_unit.switch_alt_led_strip();
+
   clock_timer.start_timer();
 }
 void (*setTimerPtr)(unsigned int) = &set_timer;
@@ -135,6 +140,14 @@ void (*setTimerPtr)(unsigned int) = &set_timer;
 void set_timer_config(byte ring, byte red, byte green, byte blue)
 {
   clock_timer.set_colours(red, green, blue);
+
+  stcPrefs.begin("STCPrefs", RW_MODE);
+  stcPrefs.putBool("timerSet", true);
+  stcPrefs.putUChar("timerRed", red);
+  stcPrefs.putUChar("timerGreen", green);
+  stcPrefs.putUChar("timerBlue", blue);
+  stcPrefs.putUChar("timerRing", ring-1);
+  stcPrefs.end();
   
   switch(ring)
   {
@@ -181,7 +194,6 @@ void(*setTimerControlPtr)(unsigned int) = &set_timer_control;
 void setup()
 {
   Serial.begin(115200);
-  while(!Serial);
 
   Wire.begin(7, 6);
 
@@ -190,30 +202,27 @@ void setup()
 
   if (tpInit == true)
   {
-    Serial.println("Preferences initialised");
-
     if (stcPrefs.isKey("hourSet"))
     {
-      Serial.print("Hour: ");
-      Serial.println(stcPrefs.getUChar("hourRing"));
       hour_unit.set_colours(stcPrefs.getUChar("hourRed"), stcPrefs.getUChar("hourGreen"), stcPrefs.getUChar("hourBlue"));
       hour_unit.set_led_strip(led_strips[stcPrefs.getUChar("hourRing")]);
     }
 
     if (stcPrefs.isKey("minuteSet"))
     {
-      Serial.print("Minute: ");
-      Serial.println(stcPrefs.getUChar("minuteRing"));
       minute_unit.set_colours(stcPrefs.getUChar("minuteRed"), stcPrefs.getUChar("minuteGreen"), stcPrefs.getUChar("minuteBlue"));
       minute_unit.set_led_strip(led_strips[stcPrefs.getUChar("minuteRing")]);
     }
 
     if (stcPrefs.isKey("secondSet"))
     {
-      Serial.print("Second: ");
-      Serial.println(stcPrefs.getUChar("secondRing"));
       second_unit.set_colours(stcPrefs.getUChar("secondRed"), stcPrefs.getUChar("secondGreen"), stcPrefs.getUChar("secondBlue"));
       second_unit.set_led_strip(led_strips[stcPrefs.getUChar("secondRing")]);
+    }
+
+    if (stcPrefs.isKey("timerSet"))
+    {
+      clock_timer.set_colours(stcPrefs.getUChar("timerRed"), stcPrefs.getUChar("timerGreen"), stcPrefs.getUChar("timerBlue"));
     }
 
     stcPrefs.end();
@@ -242,15 +251,9 @@ void loop()
   // LED Display loop
   if ( (loop_millis - led_display_last) > LED_DISPLAY_DELAY )
   {
+    outer_ring.clear();
     middle_ring.clear();
     inner_ring.clear();
-
-    if(clock_timer.is_active())
-    {
-      hour_unit.set_led_strip_temp(&inner_ring);
-      minute_unit.set_led_strip_temp(&inner_ring);
-      second_unit.set_led_strip_temp(&inner_ring);
-    }
 
     if(clock_timer.is_finished())
     {
@@ -264,6 +267,7 @@ void loop()
     second_unit.update();
     clock_timer.update();
 
+    outer_ring.clear();
     middle_ring.update();
     inner_ring.update();
     led_display_last = loop_millis;
