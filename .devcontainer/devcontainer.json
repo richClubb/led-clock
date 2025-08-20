@@ -1,0 +1,20 @@
+{
+	"name": "LED Clock Container",
+	"dockerFile": "Dockerfile",
+	// "runArgs": ["--env-file", ".devcontainer/devcontainer.env"],
+	// "features": {
+	//   "ghcr.io/devcontainers-extra/features/cmake:1": {}
+	// },
+	// "customizations": {
+	// 	"vscode": {
+	// 		"extensions": [
+	// 			"ms-vscode.cpptools",
+	// 			"ms-vscode.cpptools-extension-pack",
+	// 			"twxs.cmake"
+	// 		]
+	// 	}
+	// },
+	"mounts": [
+ 	   "type=bind,source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,readonly"
+	]
+}
