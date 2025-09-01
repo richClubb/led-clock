@@ -8,6 +8,7 @@ I chose this as the first of the projects for my 12 projects in 12 months. I've 
 
 - [x] Basic RTC functionality
 - [x] Smooth motion for clock ticking
+    - [x] Fix millis offset bug - Done
 - [x] Ability to re-colour the units
 - [x] Ability to re-allocate the led rings at runtime
 - [ ] Timer
@@ -17,19 +18,24 @@ I chose this as the first of the projects for my 12 projects in 12 months. I've 
     - [x] pause 
     - [x] reset
     - [x] Configurable colour
-- [ ] EEPROM to store configuration from last serial config
-- [ ] NTP functionality for setting the time
-- [ ] Web page for configuration
-- [ ] Self-hosted WiFi for configuration
+    - [ ] Smoother animation
+- [X] EEPROM to store configuration from last serial config
+    - [x] Initial prototype
+    - [ ] ~~Abstraction?~~ - I don't think I'm going to bother with this
+    - [X] Complete the storage
+- [ ] ~~NTP functionality for setting the time~~
+- [ ] ~~Web page for configuration~~
+- [ ] ~~Self-hosted WiFi for configuration~~
 - [x] Dont use delay!
-- [ ] Light adjustable intensity
-- [ ] Basic functionality in Rust
+- [ ] ~~Light adjustable intensity~~
+- [ ] ~~Basic functionality in Rust~~
     - [ ] Basic RTC functionality
     - [ ] Basic LED functionality
+- [x] Fix serial startup bug
 
 ### Stretch Goals
 
-- [ ] Perf test the serial interpreter
+- [ ] ~~Perf test the serial interpreter~~
 
 ## Project Start
 
@@ -136,3 +142,16 @@ This is especially important in larger projects with multiple contributors. You 
 ### Video blog
 
 I've yet to do a single recording for this. I think there is an element of fear putting this out into the world at large and I'm afraid of the code being judged by someone (especially employers). It's a hard thing to get over, even though I'm pretty certain that I'll probably get 3 views and nobody will care. 
+
+## Update 3
+
+I've got the majority of the functionality working which I'm pretty happy about at this point I've got
+
+* General LED display
+* Serial configuration
+* RTC functionality
+* Timer functionality
+    * missing buttons
+* NVM functionality
+
+It's the WiFi stuff that is mostly remaining. The question now is do I want to keep going or try to pivot to using Rust? That is the question. I think I'll spend this weekend ( 15 / 16 / 17 August ) working on the WiFi and then after that switch over to trying to get stuff working in Rust.
